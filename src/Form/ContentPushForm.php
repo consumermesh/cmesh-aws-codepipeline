@@ -31,7 +31,7 @@ class ContentPushForm extends ConfigFormBase {
     public function buildForm(array $form, FormStateInterface $form_state) {
         // check if user is administrator
         $user = \Drupal::currentUser();
-        $admin = $user->hasRole('administrator');
+        $isAdmin = $user->hasRole('administrator');
         $config = $this->config('cmesh_aws_pipeline.contentpush');
         $aws_pipeline_name = $config->get('aws_pipeline_name');
         $aws_region = $config->get('aws_region');
