@@ -1,0 +1,9 @@
+cmesh_aws_pipeline.content_push_form:
+  path: '/admin/config/cmesh_aws_pipeline/contentpush'
+  defaults:
+    _form: '\Drupal\cmesh_aws_pipeline\Form\ContentPushForm'
+    _title: 'Push Content'
+  requirements:
+    _permission: 'cmesh_aws_pipeline push_content_qa+cmesh_aws_pipeline push_content_prod'
+  options:
+    _admin_route: TRUE
