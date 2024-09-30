@@ -122,9 +122,11 @@ class ContentPushForm extends ConfigFormBase {
      */
     public function submitForm(array &$form, FormStateInterface $form_state) {
         $config = $this->config('cmesh_aws_pipeline.contentpush');
-        $aws_pipeline_name = $config->get('aws_pipeline_name');
-        $aws_region = $config->get('aws_region');
+        $config->set('aws_pipeline_name', $form_state->getValue('aws_pipeline_name'))->save();
+        $config->set('aws_region', $form_state->getValue('aws_region'))->save();
         if ($form_state->getValue('push_content') >= 0 ) {
+            $aws_pipeline_name = $config->get('aws_pipeline_name');
+            $aws_region = $config->get('aws_region');
             $client = new \Aws\CodePipeline\CodePipelineClient([
                 'region' => $aws_region,
                 'version' => 'latest'
