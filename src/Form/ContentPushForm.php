@@ -124,6 +124,7 @@ class ContentPushForm extends ConfigFormBase {
         $config = $this->config('cmesh_aws_pipeline.contentpush');
         $config->set('aws_pipeline_name', $form_state->getValue('aws_pipeline_name'))->save();
         $config->set('aws_region', $form_state->getValue('aws_region'))->save();
+        \Drupal::logger('cmesh_aws_pipeline')->info('Configuration saved.'. ' Pipeline Name: '.$form_state->getValue('aws_pipeline_name').' Region: '.$form_state->getValue('aws_region'));
         if ($form_state->getValue('push_content') >= 0 ) {
             $aws_pipeline_name = $config->get('aws_pipeline_name');
             $aws_region = $config->get('aws_region');
