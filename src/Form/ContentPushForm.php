@@ -35,20 +35,23 @@ class ContentPushForm extends ConfigFormBase {
         $config = $this->config('cmesh_aws_pipeline.contentpush');
         $aws_pipeline_name = $config->get('aws_pipeline_name');
         $aws_region = $config->get('aws_region');
-        if (($aws_pipeline_name == null || $aws_region == null) && $isAdmin) {
+        if ($isAdmin) {
             $form['aws_pipeline_name'] = [
                 '#type' => 'textfield',
                 '#title' => $this->t('AWS Pipeline Name'),
-                '#default_value' => '',
+                '#default_value' => $aws_pipeline_name,
             ];
             $form['aws_region'] = [
                 '#type' => 'textfield',
                 '#title' => $this->t('AWS Region'),
-                '#default_value' => '',
+                '#default_value' => $aws_region,
             ];
-        } else if (($aws_pipeline_name == null || $aws_region == null) && !$isAdmin) {
+        }
+
+        if (($aws_pipeline_name == null || $aws_region == null) && !$isAdmin) {
             $this->messenger()->addWarning($this->t('Only administrators can configure this module.'));
-        } else {
+        }
+        if ($aws_pipeline_name != null && $aws_region != null) {
             $form['result_table'] = [
                 '#type' => 'table',
                 '#caption' => 'Pipeline Runs',
@@ -121,9 +124,13 @@ class ContentPushForm extends ConfigFormBase {
      * {@inheritdoc}
      */
     public function submitForm(array &$form, FormStateInterface $form_state) {
+        $user = \Drupal::currentUser();
+        $isAdmin = $user->hasRole('administrator');
         $config = $this->config('cmesh_aws_pipeline.contentpush');
-        $config->set('aws_pipeline_name', $form_state->getValue('aws_pipeline_name'))->save();
-        $config->set('aws_region', $form_state->getValue('aws_region'))->save();
+        if ($isAdmin) {
+            $config->set('aws_pipeline_name', $form_state->getValue('aws_pipeline_name'))->save();
+            $config->set('aws_region', $form_state->getValue('aws_region'))->save();
+        }
         \Drupal::logger('cmesh_aws_pipeline')->info('Configuration saved.'. ' Pipeline Name: '.$form_state->getValue('aws_pipeline_name').' Region: '.$form_state->getValue('aws_region'));
         if ($form_state->getValue('push_content') >= 0 ) {
             $aws_pipeline_name = $config->get('aws_pipeline_name');
