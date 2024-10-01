@@ -110,7 +110,7 @@ class ContentPushForm extends ConfigFormBase {
             $form['aws_pipeline'] = [
                 '#type' => 'details',
                 '#open' => FALSE,
-                '#title' => $this->t('Azure DevOps'),
+                '#title' => $this->t('AWS CodePipeline'),
             ];
             $form['aws_pipeline']['aws_pipeline_name'] = [
                 '#type' => 'textfield',
