@@ -7,3 +7,28 @@ cmesh_aws_pipeline.content_push_form:
     _permission: 'cmesh_aws_pipeline push_content_qa+cmesh_aws_pipeline push_content_prod'
   options:
     _admin_route: TRUE
+
+# API Routes (cmesh-push-content paths for editing toolbar compatibility)
+cmesh_aws_pipeline.api_trigger:
+  path: '/api/cmesh-push-content/trigger'
+  defaults:
+    _controller: '\Drupal\cmesh_aws_pipeline\Controller\AwsPipelineController::trigger'
+  requirements:
+    _permission: 'cmesh_aws_pipeline push_content_qa+cmesh_aws_pipeline push_content_prod'
+  methods: [POST]
+
+cmesh_aws_pipeline.api_status:
+  path: '/api/cmesh-push-content/status'
+  defaults:
+    _controller: '\Drupal\cmesh_aws_pipeline\Controller\AwsPipelineController::status'
+  requirements:
+    _permission: 'cmesh_aws_pipeline push_content_qa+cmesh_aws_pipeline push_content_prod'
+  methods: [GET]
+
+cmesh_aws_pipeline.api_environments:
+  path: '/api/cmesh-push-content/environments'
+  defaults:
+    _controller: '\Drupal\cmesh_aws_pipeline\Controller\AwsPipelineController::pipelines'
+  requirements:
+    _permission: 'cmesh_aws_pipeline push_content_qa+cmesh_aws_pipeline push_content_prod'
+  methods: [GET]
