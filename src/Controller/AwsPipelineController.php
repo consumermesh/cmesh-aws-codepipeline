@@ -133,12 +133,19 @@ class AwsPipelineController extends ControllerBase {
         'version' => 'latest',
       ]);
 
-      $result = $client->getPipelineExecution([
+      $result = $client->listPipelineExecutions([
+        'maxResults' => 5,
         'pipelineName' => $aws_pipeline_name,
-        'pipelineExecutionId' => $execution_id,
       ]);
 
-      $status = $result['pipelineExecution']['status'] ?? 'Unknown';
+      $status = 'Unknown';
+      foreach ($result['pipelineExecutionSummaries'] as $item) {
+        if ($item['pipelineExecutionId'] === $execution_id) {
+          $status = $item['status'];
+          break;
+        }
+      }
+
       $is_running = in_array($status, ['InProgress', 'Stopping']);
 
       $completed = NULL;
