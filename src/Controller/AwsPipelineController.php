@@ -63,6 +63,11 @@ class AwsPipelineController extends ControllerBase {
     }
 
     try {
+      // Pipeline pulls from Drupal asynchronously and has hit corrupted
+      // cache state; flush before triggering so the build sees fresh data.
+      drupal_flush_all_caches();
+      \Drupal::logger('cmesh_aws_pipeline')->info('Cleared all Drupal caches before content push.');
+
       $client = new \Aws\CodePipeline\CodePipelineClient([
         'region' => $aws_region,
         'version' => 'latest'

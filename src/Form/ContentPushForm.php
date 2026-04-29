@@ -146,6 +146,12 @@ class ContentPushForm extends ConfigFormBase {
         if ($form_state->getValue('push_content') >= 0 ) {
             $aws_pipeline_name = $config->get('aws_pipeline_name');
             $aws_region = $config->get('aws_region');
+
+            // Pipeline pulls from Drupal asynchronously and has hit corrupted
+            // cache state; flush before triggering so the build sees fresh data.
+            drupal_flush_all_caches();
+            \Drupal::logger('cmesh_aws_pipeline')->info('Cleared all Drupal caches before content push.');
+
             $client = new \Aws\CodePipeline\CodePipelineClient([
                 'region' => $aws_region,
                 'version' => 'latest'
