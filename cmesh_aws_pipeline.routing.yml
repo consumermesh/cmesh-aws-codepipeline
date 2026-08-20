@@ -32,3 +32,11 @@ cmesh_aws_pipeline.api_environments:
   requirements:
     _permission: 'cmesh_aws_pipeline push_content_qa+cmesh_aws_pipeline push_content_prod'
   methods: [GET]
+
+cmesh_aws_pipeline.api_graphql_health:
+  path: '/api/cmesh-push-content/graphql-health'
+  defaults:
+    _controller: '\Drupal\cmesh_aws_pipeline\Controller\AwsPipelineController::graphqlHealth'
+  requirements:
+    _permission: 'cmesh_aws_pipeline push_content_qa+cmesh_aws_pipeline push_content_prod'
+  methods: [GET]

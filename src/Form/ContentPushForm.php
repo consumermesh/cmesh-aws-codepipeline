@@ -147,10 +147,26 @@ class ContentPushForm extends ConfigFormBase {
             $aws_pipeline_name = $config->get('aws_pipeline_name');
             $aws_region = $config->get('aws_region');
 
-            // Pipeline pulls from Drupal asynchronously and has hit corrupted
-            // cache state; flush before triggering so the build sees fresh data.
-            drupal_flush_all_caches();
-            \Drupal::logger('cmesh_aws_pipeline')->info('Cleared all Drupal caches before content push.');
+            // Repair the schema caches first: a pipeline run that starts against a
+            // schema whose fields have lost their resolvers bakes a whole site of
+            // nulls into the build, and the build has no way to tell that apart
+            // from genuinely empty content.
+            cmesh_aws_pipeline_graphql_schema_check();
+
+            // Drop cached GraphQL query results so the asynchronously-triggered
+            // build sees fresh content. Scoped to the results bin on purpose:
+            // drupal_flush_all_caches() also empties the shared, permanently
+            // cached schema bins (graphql_ast, graphql_definitions,
+            // graphql_compose_definitions). On a multi-instance fleet whichever
+            // instance repopulates those first publishes its plugin list to every
+            // other instance, so one instance running a stale compiled container
+            // leaves schema fields with no resolver -- and an unresolved field
+            // resolves to null with no error, i.e. the HTTP 200 "data": null
+            // responses this flush was added to work around.
+            if (\Drupal::hasService('cache.graphql.results')) {
+                \Drupal::service('cache.graphql.results')->deleteAll();
+                \Drupal::logger('cmesh_aws_pipeline')->info('Cleared GraphQL result cache before content push.');
+            }
 
             $client = new \Aws\CodePipeline\CodePipelineClient([
                 'region' => $aws_region,
